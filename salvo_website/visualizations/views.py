@@ -448,13 +448,19 @@ def kmeans_elbow_method(request):
             
             print(f"WCSS calculated: {wcss}")  # Debug log
             
+            # return JsonResponse({
+            #     'k_values': list(k_range),
+            #     'wcss': wcss,
+            #     'data_points': X.tolist(),
+            #     'optimal_k': find_optimal_k(wcss)
+            # })
             return JsonResponse({
-                'k_values': list(k_range),
-                'wcss': wcss,
+                'k_values': [int(k) for k in k_range],
+                'wcss': [float(v) for v in wcss],
                 'data_points': X.tolist(),
-                'optimal_k': find_optimal_k(wcss)
+                'optimal_k': int(find_optimal_k(wcss))
             })
-            
+
         except Exception as e:
             print(f"Error in kmeans_elbow_method: {e}")  # Debug log
             import traceback
