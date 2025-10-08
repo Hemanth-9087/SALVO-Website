@@ -76,7 +76,7 @@ urlpatterns = [
     path('upload_aaas_model/', aaas_views.upload_model, name='upload_model'),
     path('repo/', aaas_views.aaas_repository, name='aaas_repo'),
     path('repo/<int:model_id>/', aaas_views.aaas_detail, name='aaas_detail'),   
-    
+    path('delete_openmodel/<int:model_id>/',aaas_views.delete_openmodel, name='delete_openmodel'),
     
 
     

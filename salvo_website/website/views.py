@@ -7,6 +7,7 @@ from .models import Account, Member, Post, JoinRequest, PostLike
 from .forms import AccountRegistrationForm, MemberRegistrationForm, LoginForm, JoinRequestForm
 from .tagger import PostTagger
 from .tag_dataset import AIdict
+from AAAS.models import AAAS
 import json
 
 from . import safe_parse_tree as spt
@@ -425,14 +426,18 @@ def like_post(request, post_id):
 
 def account_profile(request, reg_no):
     account = Account.objects.get(register_no=reg_no)
+    # Fetch all AAAS models posted by this member
+    models = AAAS.objects.filter(register_no=reg_no).order_by('-uploaded_at')
     posts = Post.objects.filter(author_reg_no=reg_no)
-    return render(request, 'account_profile.html', {'user': account, 'posts': posts})
+    return render(request, 'account_profile.html', {'user': account, 'posts': posts, 'models': models})
 
 
 def member_profile(request, reg_no):
     member = Member.objects.get(register_no=reg_no)
+    # Fetch all AAAS models posted by this account
+    models = AAAS.objects.filter(register_no=reg_no).order_by('-uploaded_at')
     posts = Post.objects.filter(author_reg_no=reg_no)
-    return render(request, 'member_profile.html', {'user': member, 'posts': posts})
+    return render(request, 'member_profile.html', {'user': member, 'posts': posts, 'models': models})
 
 def logout(request):
     # Clear all session data

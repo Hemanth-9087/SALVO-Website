@@ -41,50 +41,57 @@
     <div class="row justify-content-center">
         <div class="col-lg-5 col-md-7">
             <div class="ai-card animate-on-scroll" style="margin-top: 50px;">
-                <div class="text-center mb-4">
-                    <h2 class="code-font" style="color: var(--accent-green); margin-bottom: 10px;">
-                        <i class="fas fa-user-plus me-2"></i>Neural Registration
-                    </h2>
-                    <p class="text-secondary">Initialize your AI journey at SASTRA</p>
-                </div>
-
-                {% if msg %}
-                    <div class="alert alert-warning text-center mb-4">
-                        <i class="fas fa-exclamation-triangle me-2"></i>{{ msg }}
+                {% if request.session.user_type %}
+                    <div class="alert alert-info text-center mb-4">
+                        <i class="fas fa-smile-wink me-2"></i>
+                        You're already part of the SALVO AI Club! No need to sign up again, you're one of us now. Go explore your dashboard instead!
                     </div>
+                {% else %}
+                    <div class="text-center mb-4">
+                        <h2 class="code-font" style="color: var(--accent-green); margin-bottom: 10px;">
+                            <i class="fas fa-user-plus me-2"></i>Neural Registration
+                        </h2>
+                        <p class="text-secondary">Initialize your AI journey at SASTRA</p>
+                    </div>
+
+                    {% if msg %}
+                        <div class="alert alert-warning text-center mb-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i>{{ msg }}
+                        </div>
+                    {% endif %}
+
+                    <form method="post" class="px-2">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            {% for field in form %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label">
+                                        {{ field.label }}
+                                    </label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="form-text" style="color: var(--text-secondary);">
+                                            <i class="fas fa-info-circle me-1"></i>{{ field.help_text }}
+                                        </div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in field.errors %}
+                                                <small><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="d-grid mb-4">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-brain me-2"></i>Initialize Neural Network
+                            </button>
+                        </div>
+                    </form>
                 {% endif %}
-
-                <form method="post" class="px-2">
-                    {% csrf_token %}
-                    <div class="mb-4">
-                        {% for field in form %}
-                            <div class="mb-3">
-                                <label for="{{ field.id_for_label }}" class="form-label">
-                                    {{ field.label }}
-                                </label>
-                                {{ field }}
-                                {% if field.help_text %}
-                                    <div class="form-text" style="color: var(--text-secondary);">
-                                        <i class="fas fa-info-circle me-1"></i>{{ field.help_text }}
-                                    </div>
-                                {% endif %}
-                                {% if field.errors %}
-                                    <div class="text-danger mt-1">
-                                        {% for error in field.errors %}
-                                            <small><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
-                    </div>
-                    
-                    <div class="d-grid mb-4">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="fas fa-brain me-2"></i>Initialize Neural Network
-                        </button>
-                    </div>
-                </form>
 
                 <div class="text-center">
                     <a href="/home" class="btn btn-outline-secondary">

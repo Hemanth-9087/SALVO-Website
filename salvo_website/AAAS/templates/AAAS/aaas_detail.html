@@ -62,7 +62,12 @@
                 <i class="fas fa-user"></i>Contributed by:
             </span>
             <span class="detail-content" style="color: var(--neural-orange); font-weight: bold;">
-                #{{ model.register_no }}
+                #<a href="{% if user_type == 'member' %}{% url 'member_profile' model.register_no %}{% elif user_type == 'account' %}{% url 'account_profile' model.register_no %}{% endif %}" style="color: var(--neural-orange); text-decoration: none;">
+                    {{ model.register_no }}
+                </a>
+            </span>
+            <span class="detail-content" style="color: var(--neural-orange); font-weight: bold;">
+                {{ user.name }}
             </span>
         </div>
         <div class="mb-3">

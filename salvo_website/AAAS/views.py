@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from .models import AAAS
-
 from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
+from website.models import Account, Member
+from django.contrib import messages
 # Create your views here.
 #define a function for upploading open source AI models and store the files by mapping it with models.py
 def upload_model(request):
@@ -47,10 +48,57 @@ def upload_model(request):
     return render(request, 'AAAS/post_openmodel.html')
 
 def aaas_repository(request):
+    # Fetch all models
     models = AAAS.objects.all().order_by('-uploaded_at')
-    #print(models)
-    return render(request, 'AAAS/aaas_repository.html', {'models': models}) 
+
+    # Check if the current user is a member
+    register_no = request.session.get('register_no')
+    member = Member.objects.filter(register_no=register_no).first() if request.session.get('user_type') == 'member' else None
+
+    return render(request, 'AAAS/aaas_repository.html', {
+        'models': models,
+        'member': member,  # Pass the member object to the template
+    })
 
 def aaas_detail(request, model_id):
+    # Fetch the AAAS model object
     model = get_object_or_404(AAAS, id=model_id)
-    return render(request, 'AAAS/aaas_detail.html', {'model': model})
+    
+    # Fetch the account or member based on the register_no
+    register_no = model.register_no
+    account = Account.objects.filter(register_no=register_no).first()
+    member = Member.objects.filter(register_no=register_no).first()
+    
+    # Determine the user type and pass the appropriate object
+    user = account if account else member
+    user_type = 'account' if account else 'member' if member else 'unknown'
+    
+    return render(request, 'AAAS/aaas_detail.html', {
+        'model': model,
+        'user': user,
+        'user_type': user_type,
+    })
+
+def delete_openmodel(request, model_id):
+    if request.method == 'POST':
+        # Check if the user is a member and has the required role
+        register_no = request.session.get('register_no')
+        member = Member.objects.filter(register_no=register_no).first()
+
+        if member and member.club_role in ['Lead', 'Co-ordinator']:
+            model = get_object_or_404(AAAS, id=model_id)
+
+            # Delete associated files from the file system
+            if model.model_file:
+                model.model_file.delete(save=False)
+            if model.documentation_file:
+                model.documentation_file.delete(save=False)
+            if model.dataset_file:
+                model.dataset_file.delete(save=False)
+            if model.code_file:
+                model.code_file.delete(save=False)
+
+            model.delete()
+            return redirect(aaas_repository)
+        else:
+            return redirect(aaas_repository)  # Redirect if the user doesn't have permission
