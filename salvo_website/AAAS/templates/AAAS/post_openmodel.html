@@ -96,7 +96,7 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
     const datasetFile = document.getElementById('dataset_file').files.length;
     const codeFile = document.getElementById('code_file').files.length;
 
-    if ((!name || !desc ) )
+    if (!name || !desc || (modelFile === 0 && docFile === 0 && datasetFile === 0 && codeFile === 0)) 
       {
         e.preventDefault();
         alert("Unsuccessful: Please fill in the project name, description, and upload at least one file (model, documentation, dataset, or code).");

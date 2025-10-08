@@ -12,8 +12,7 @@ def upload_model(request):
     if not request.session.get('register_no'):
         return redirect('login')
     
-        
-        
+    
     if request.method == 'POST':
         name = request.POST['name']
         description = request.POST['description']
@@ -42,15 +41,14 @@ def upload_model(request):
             print("Error saving model:", e)
             msg= "ERROR"
         
-        print(msg)
-        
+        #print(msg)
         return render(request, 'AAAS/post_openmodel.html', {'model': new_model, 'message': msg})
 
     return render(request, 'AAAS/post_openmodel.html')
 
 def aaas_repository(request):
     models = AAAS.objects.all().order_by('-uploaded_at')
-    print(models)
+    #print(models)
     return render(request, 'AAAS/aaas_repository.html', {'models': models}) 
 
 def aaas_detail(request, model_id):
