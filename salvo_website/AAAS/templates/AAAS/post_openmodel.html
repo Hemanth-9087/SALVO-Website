@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}Upload AI Model / Dataset - SALVO AI Club{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            
+            <div class="ai-card animate-on-scroll" style="margin-top: 50px;">
+                <div class="text-center mb-4">
+                    
+                    
+                            
+                                
+                            
+                        
+                    <h2 class="code-font" style="color: var(--accent-green); margin-bottom: 15px;">
+                        <i class="fas fa-upload me-2"></i>Upload AI Model / Dataset
+                    </h2>
+                    <p class="text-secondary fs-5">{{message}}</p>
+                    <p class="text-secondary fs-5">Share your models, , documentation, and code with the community</p>
+                </div>
+                
+
+                <form method="POST" enctype="multipart/form-data" class="px-2" id="uploadForm">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="name" class="form-label">
+                            <i class="fas fa-heading me-2"></i>Model/Project Name
+                        </label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               placeholder="Enter the name of your model/project..." maxlength="100" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-edit me-2"></i>Description
+                        </label>
+                        <textarea class="form-control" id="description" name="description" rows="6"
+                                  placeholder="Describe your model, dataset, or project..." required></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="model_file" class="form-label">
+                            <i class="fas fa-file-upload me-2"></i>Model File
+                        </label>
+                        <input type="file" class="form-control" id="model_file" name="model_file"
+                               accept=".h5,.keras,.onnx,.pt,.pth,.pb,.ckpt,.tflite,.zip" >
+                        <div class="form-text text-secondary">
+                            Supported formats: Keras, ONNX, TensorFlow, PyTorch, ZIP
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="documentation_file" class="form-label">
+                            <i class="fas fa-file-alt me-2"></i>Documentation File (PDF)
+                        </label>
+                        <input type="file" class="form-control" id="documentation_file" name="documentation_file"
+                               accept=".pdf" >
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="dataset_file" class="form-label">
+                            <i class="fas fa-database me-2"></i>Dataset File
+                        </label>
+                        <input type="file" class="form-control" id="dataset_file" name="dataset_file"
+                               accept=".csv,.xlsx,.zip" >
+                        <div class="form-text text-secondary">
+                            Supported formats: CSV, Excel, ZIP
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="code_file" class="form-label">
+                            <i class="fas fa-code me-2"></i>Code File
+                        </label>
+                        <input type="file" class="form-control" id="code_file" name="code_file"
+                               accept=".py,.ipynb,.zip" >
+                        <div class="form-text text-secondary">
+                            Supported formats: Python, Jupyter Notebook, ZIP
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-4">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-upload me-2"></i>Upload
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    const name = document.getElementById('name').value.trim();
+    const desc = document.getElementById('description').value.trim();
+    const modelFile = document.getElementById('model_file').files.length;
+    const docFile = document.getElementById('documentation_file').files.length;
+    const datasetFile = document.getElementById('dataset_file').files.length;
+    const codeFile = document.getElementById('code_file').files.length;
+
+    if ((!name || !desc ) )
+      {
+        e.preventDefault();
+        alert("Unsuccessful: Please fill in the project name, description, and upload at least one file (model, documentation, dataset, or code).");
+        return false;
+    }
+});
+</script>
+{% endblock %}

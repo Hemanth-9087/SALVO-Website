@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Project Details - SALVO AI Club{% endblock %}
+
+{% block extra_css %}
+<style>
+    .repo-card {
+        background: var(--code-bg);
+        border: 1px solid var(--border-glow);
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 600px;
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.12);
+    }
+    .repo-title {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.5rem;
+        color: var(--accent-green);
+        font-weight: bold;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .detail-label {
+        font-weight: bold;
+        color: var(--primary-cyan);
+        font-family: 'JetBrains Mono', monospace;
+        margin-right: 8px;
+    }
+    .detail-content {
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--text-primary);
+    }
+    .file-download-btn {
+        margin: 0.25rem 0;
+        width: 100%;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1rem;
+        border-radius: 8px;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .file-download-btn i {
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="repo-card">
+        <div class="repo-title">
+            <i class="fas fa-robot"></i>
+            {{ model.name }}
+        </div>
+        <div class="mb-3">
+            <span class="detail-label">
+                <i class="fas fa-user"></i>Contributed by:
+            </span>
+            <span class="detail-content" style="color: var(--neural-orange); font-weight: bold;">
+                #{{ model.register_no }}
+            </span>
+        </div>
+        <div class="mb-3">
+            <span class="detail-label">
+                <i class="fas fa-edit"></i>Description:
+            </span>
+            <div class="detail-content">{{ model.description }}</div>
+        </div>
+        <div class="mb-3">
+            <span class="detail-label">
+                <i class="fas fa-calendar-alt"></i>Uploaded At:
+            </span>
+            <span class="detail-content">{{ model.uploaded_at|date:"M d, Y H:i" }}</span>
+        </div>
+        <div class="mb-3">
+            <span class="detail-label">
+                <i class="fas fa-download"></i>Download Files:
+            </span>
+            <div>
+                {% if model.model_file %}
+                    <a href="{{ model.model_file.url }}" class="btn btn-primary file-download-btn" target="_blank">
+                        <i class="fas fa-file-upload"></i>Model File
+                    </a>
+                {% endif %}
+                {% if model.documentation_file %}
+                    <a href="{{ model.documentation_file.url }}" class="btn btn-secondary file-download-btn" target="_blank">
+                        <i class="fas fa-file-alt"></i>Documentation
+                    </a>
+                {% endif %}
+                {% if model.dataset_file %}
+                    <a href="{{ model.dataset_file.url }}" class="btn btn-success file-download-btn" target="_blank">
+                        <i class="fas fa-database"></i>Dataset
+                    </a>
+                {% endif %}
+                {% if model.code_file %}
+                    <a href="{{ model.code_file.url }}" class="btn btn-info file-download-btn" target="_blank">
+                        <i class="fas fa-code"></i>Code
+                    </a>
+                {% endif %}
+                {% if not model.model_file and not model.documentation_file and not model.dataset_file and not model.code_file %}
+                    <div class="text-secondary">No files uploaded for this project.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
