@@ -425,6 +425,8 @@ def like_post(request, post_id):
 
 
 def account_profile(request, reg_no):
+    if 'register_no' not in request.session or request.session['user_type'] != 'account':
+        return redirect('login')
     account = Account.objects.get(register_no=reg_no)
     # Fetch all AAAS models posted by this member
     models = AAAS.objects.filter(register_no=reg_no).order_by('-uploaded_at')
@@ -433,6 +435,8 @@ def account_profile(request, reg_no):
 
 
 def member_profile(request, reg_no):
+    if 'register_no' not in request.session or request.session['user_type'] != 'member':
+        return redirect('login')
     member = Member.objects.get(register_no=reg_no)
     # Fetch all AAAS models posted by this account
     models = AAAS.objects.filter(register_no=reg_no).order_by('-uploaded_at')
@@ -441,6 +445,8 @@ def member_profile(request, reg_no):
 
 
 def edit_member_profile(request, reg_no):
+    if 'register_no' not in request.session or request.session['user_type'] != 'member' and reg_no != request.session['register_no']:
+        return redirect('login')
     # Fetch the member object
     member = get_object_or_404(Member, register_no=reg_no)
 
@@ -459,6 +465,8 @@ def edit_member_profile(request, reg_no):
 
 
 def edit_account_profile(request, reg_no):
+    if 'register_no' not in request.session or request.session['user_type'] != 'account' and reg_no != request.session['register_no']:
+        return redirect('login')
     # Fetch the account object
     account = get_object_or_404(Account, register_no=reg_no)
 
