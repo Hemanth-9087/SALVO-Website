@@ -44,17 +44,17 @@ def login(request):
             # Check if user exists in either Account or Member table
             if not user and not member:
                 messages.error(request, "No account found with this register number. Please check your register number or create a new account.")
-            elif user and check_password(password, user.password):
-                request.session['user_type'] = 'account'
-                request.session['register_no'] = user.register_no
-                return redirect(account_dashboard)
             elif member and check_password(password, member.password):
                 request.session['user_type'] = 'member'
                 request.session['register_no'] = member.register_no
                 return redirect(member_dashboard)
+            elif user and check_password(password, user.password):
+                request.session['user_type'] = 'account'
+                request.session['register_no'] = user.register_no
+                return redirect(account_dashboard)
             else:
                 # User exists but password is wrong
-                user_type = "account" if user else "member account"
+                user_type = "member" if member else "account"
                 messages.error(request, f"Incorrect password for this {user_type}. Please check your password and try again.")
     else:
         form = LoginForm()
@@ -475,6 +475,17 @@ def edit_account_profile(request, reg_no):
 
     return render(request, 'edit_account_profile.html', {'account': account})
 
+def delete_account(request, reg_no):
+    member = get_object_or_404(Account, register_no=reg_no)
+    member.delete()
+    messages.error(request, "Your account has been deleted.")
+    return redirect('logout')  # change 'home' to your desired redirect
+
+def delete_member(request, reg_no):
+    member = get_object_or_404(Member, register_no=reg_no)
+    member.delete()
+    messages.error(request, "Your account has been deleted.")
+    return redirect('logout')  # change 'home' to your desired redirect
 
 def logout(request):
     # Clear all session data

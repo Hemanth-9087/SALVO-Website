@@ -20,7 +20,8 @@ from django.contrib import admin
 from django.urls import path, include
 from website.views import home, login, member_dashboard, account_dashboard, register_member, register_account, \
     create_post, verify_post, join_request, view_applications, upvote_application, update_application_status, like_post, \
-    account_profile, member_profile, logout, delete_post, edit_member_profile, edit_account_profile
+    account_profile, member_profile, logout, delete_post, edit_member_profile, edit_account_profile, delete_account, delete_member\
+    
 from drawapp import views
 from tracker import views as v1
 from AAAS import views as aaas_views
@@ -28,7 +29,7 @@ from AAAS import views as aaas_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home),
-    path('home/', home),
+    path('home/', home, name='home'),
     path('member_home/', member_dashboard, name='member_dashboard'),
     path('account_home/', account_dashboard, name='account_dashboard'),
     path('login/', login,name='login'),
@@ -49,8 +50,8 @@ urlpatterns = [
     path('profile/member/<int:reg_no>/', member_profile, name='member_profile'),
     path('member/<int:reg_no>/edit/', edit_member_profile, name='edit_member_profile'),
     path('account/<int:reg_no>/edit/', edit_account_profile, name='edit_account_profile'),
-    
-    
+    path('delete_account/<int:reg_no>/', delete_account, name='delete_account'),
+    path('delete_member/<int:reg_no>/', delete_member, name='delete_member'),
     # Scribble URLS
     
     path('draw/', views.draw_page, name='draw'),

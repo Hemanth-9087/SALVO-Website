@@ -71,18 +71,30 @@
             </div>
             <div class="mb-4">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" name="email" class="form-control" value="{{ account.sastra_email }}" required>
+                <input type="email" id="email" name="email" class="form-control" value="{{ account.sastra_email }}"
+                    required>
             </div>
             <div class="mb-4">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Leave blank to keep current password">
+                <input type="password" id="password" name="password" class="form-control"
+                    placeholder="Leave blank to keep current password">
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-save">
                     <i class="fas fa-save me-2"></i>Save Changes
                 </button>
+                <button type="button" class="btn btn-danger" style="border-radius:25px;" onclick="confirmDelete()">
+                    <i class="fas fa-trash-alt me-2"></i>Delete Account
+                </button>
             </div>
         </form>
     </div>
 </div>
+<script>
+    function confirmDelete() {
+        if (confirm("⚠️ Are you sure you want to delete your account? This action cannot be undone!")) {
+            window.location.href = "{% url 'delete_account' account.register_no %}";
+        }
+    }
+</script>
 {% endblock %}

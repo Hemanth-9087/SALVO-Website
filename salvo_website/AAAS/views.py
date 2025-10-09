@@ -70,8 +70,8 @@ def aaas_detail(request, model_id):
     member = Member.objects.filter(register_no=register_no).first()
     
     # Determine the user type and pass the appropriate object
-    user = account if account else member
-    user_type = 'account' if account else 'member' if member else 'unknown'
+    user = member if member else account
+    user_type = 'member' if member else 'account' if account else 'unknown'
     
     return render(request, 'AAAS/aaas_detail.html', {
         'model': model,
