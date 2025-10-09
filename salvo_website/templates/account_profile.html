@@ -90,6 +90,10 @@
                 <div class="profile-avatar">
                     <i class="fas fa-user"></i>
                 </div>
+                <!-- Edit Profile Button -->
+                <a href="{% url 'edit_account_profile' user.register_no %}" class="btn btn-primary mt-3" style="background: linear-gradient(45deg, var(--primary-purple), var(--primary-blue)); border: none;">
+                    <i class="fas fa-edit me-2"></i>Edit Profile
+                </a>
                 {% if is_member %}
                     <div class="member-badge">
                         <i class="fas fa-check-circle me-2"></i>Club Member

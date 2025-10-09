@@ -145,6 +145,10 @@
                 <div class="role-badge">
                     <i class="fas fa-crown me-2"></i>{{ user.club_role }}
                 </div>
+                <!-- Edit Profile Button -->
+                <a href="{% url 'edit_member_profile' user.register_no %}" class="btn btn-primary mt-3" style="background: linear-gradient(45deg, var(--primary-purple), var(--primary-blue)); border: none;">
+                    <i class="fas fa-edit me-2"></i>Edit Profile
+                </a>
             </div>
             <div class="col-md-8">
                 <h1 class="page-title text-start mb-3">

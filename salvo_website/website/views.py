@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect, HttpResponse
-from django.contrib.auth.hashers import check_password
+from django.shortcuts import get_object_or_404, render, redirect, HttpResponse
+from django.contrib.auth.hashers import check_password, make_password
 from django.contrib import messages
 from django.db import models
 from django.http import JsonResponse
@@ -438,6 +438,43 @@ def member_profile(request, reg_no):
     models = AAAS.objects.filter(register_no=reg_no).order_by('-uploaded_at')
     posts = Post.objects.filter(author_reg_no=reg_no)
     return render(request, 'member_profile.html', {'user': member, 'posts': posts, 'models': models})
+
+
+def edit_member_profile(request, reg_no):
+    # Fetch the member object
+    member = get_object_or_404(Member, register_no=reg_no)
+
+    if request.method == 'POST':
+        # Update the member's details
+        member.name = request.POST.get('name')
+        password = request.POST.get('password')
+        if password:  # Only update the password if provided
+            member.password = make_password(password)
+        member.save()
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect('member_profile', reg_no=reg_no)
+
+    return render(request, 'edit_member_profile.html', {'member': member})
+
+
+def edit_account_profile(request, reg_no):
+    # Fetch the account object
+    account = get_object_or_404(Account, register_no=reg_no)
+
+    if request.method == 'POST':
+        # Update the account's details
+        account.name = request.POST.get('name')
+        password = request.POST.get('password')
+        if password:  # Only update the password if provided
+            account.password = make_password(password)
+        account.save()
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect('account_profile', reg_no=reg_no)
+
+    return render(request, 'edit_account_profile.html', {'account': account})
+
 
 def logout(request):
     # Clear all session data

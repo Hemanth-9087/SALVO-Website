@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.urls import path, include
 from website.views import home, login, member_dashboard, account_dashboard, register_member, register_account, \
     create_post, verify_post, join_request, view_applications, upvote_application, update_application_status, like_post, \
-    account_profile, member_profile, logout, delete_post
+    account_profile, member_profile, logout, delete_post, edit_member_profile, edit_account_profile
 from drawapp import views
 from tracker import views as v1
 from AAAS import views as aaas_views
@@ -47,7 +47,10 @@ urlpatterns = [
     path('like_post/<int:post_id>/', like_post, name='like_post'),
     path('profile/account/<int:reg_no>/', account_profile, name='account_profile'),
     path('profile/member/<int:reg_no>/', member_profile, name='member_profile'),
-
+    path('member/<int:reg_no>/edit/', edit_member_profile, name='edit_member_profile'),
+    path('account/<int:reg_no>/edit/', edit_account_profile, name='edit_account_profile'),
+    
+    
     # Scribble URLS
     
     path('draw/', views.draw_page, name='draw'),
