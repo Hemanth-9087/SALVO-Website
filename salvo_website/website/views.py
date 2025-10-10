@@ -80,6 +80,10 @@ def register_member(request):
     form = MemberRegistrationForm()
     return render(request, 'register_member.html', {'form': form, 'member': member})
 
+def view_members(request):
+    members = Member.objects.all().order_by('name')
+    search_member_map = {m.name: m.register_no for m in Member.objects.all()}
+    return render(request, 'view_members.html', {'members': members, 'search_member_map': search_member_map})
 
 def account_dashboard(request):
     if request.session.get('user_type') != 'account':
@@ -427,21 +431,23 @@ def like_post(request, post_id):
 def account_profile(request, reg_no):
     if 'register_no' not in request.session or request.session['user_type'] != 'account':
         return redirect('login')
+    session_user=request.session['register_no']
     account = Account.objects.get(register_no=reg_no)
     # Fetch all AAAS models posted by this member
     models = AAAS.objects.filter(register_no=reg_no).order_by('-uploaded_at')
     posts = Post.objects.filter(author_reg_no=reg_no)
-    return render(request, 'account_profile.html', {'user': account, 'posts': posts, 'models': models})
+    return render(request, 'account_profile.html', {'user': account, 'posts': posts, 'models': models,'session_user':session_user})
 
 
 def member_profile(request, reg_no):
     if 'register_no' not in request.session or request.session['user_type'] != 'member':
         return redirect('login')
+    session_user=request.session['register_no']
     member = Member.objects.get(register_no=reg_no)
     # Fetch all AAAS models posted by this account
     models = AAAS.objects.filter(register_no=reg_no).order_by('-uploaded_at')
     posts = Post.objects.filter(author_reg_no=reg_no)
-    return render(request, 'member_profile.html', {'user': member, 'posts': posts, 'models': models})
+    return render(request, 'member_profile.html', {'user': member, 'posts': posts, 'models': models, 'session_user':session_user})
 
 
 def edit_member_profile(request, reg_no):

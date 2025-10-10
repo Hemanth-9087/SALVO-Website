@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}// OUR MEMBERS{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold text-center mb-6 text-cyan-400 drop-shadow-lg">// OUR MEMBERS</h1>
+
+<!-- Neural Search -->
+<div class="ai-card animate-on-scroll mb-5 p-4 text-center">
+    <h4 class="code-font mb-3 text-accent">
+        <i class="fas fa-search me-2"></i>Neural Search
+    </h4>
+    <div class="search-container position-relative mx-auto" style="max-width: 500px;">
+        <input type="text" id="search-bar" class="form-control" placeholder="Search members by name..." autocomplete="off">
+        <ul id="search-results" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000;"></ul>
+    </div>
+</div>
+
+<!-- Members Grid -->
+<div class="row g-4">
+    {% for member in members %}
+    <div class="col-md-4">
+        <div class="ai-card animate-on-scroll text-center" id="member-{{ member.register_no }}">
+            <div class="ai-icon mb-3">
+                <i class="fas fa-user-cog"></i>
+            </div>
+            <h5 class="code-font">{{ member.name }}</h5>
+            <p class="text-accent mb-2">{{ member.club_role }}</p>
+            <div class="algorithm-showcase mt-3">
+                <div class="algorithm-code">
+                    <span class="keyword">reg_no</span>: <span class="string">"{{ member.register_no }}"</span><br>
+                    <span class="keyword">email</span>: <span class="string">"{{ member.sastra_email }}"</span><br>
+                    <span class="keyword">branch</span>: <span class="string">"{{ member.branch }}"</span><br>
+                    <span class="keyword">batch</span>: <span class="string">"{{ member.batch }}"</span><br>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Search Script -->
+<script>
+    const members = {{ search_member_map | safe }};
+    const searchBar = document.getElementById("search-bar");
+    const resultsList = document.getElementById("search-results");
+
+    function clearResults() {
+        resultsList.innerHTML = '';
+        resultsList.classList.remove('show');
+    }
+
+    function searchSuggestions(query) {
+        return Object.keys(members)
+            .filter(name => name.toLowerCase().includes(query.toLowerCase()))
+            .sort();
+    }
+
+    function createResultItem(name, reg_no) {
+        const li = document.createElement("li");
+        li.className = "list-group-item list-group-item-action";
+        li.innerHTML = `<i class="fas fa-user me-2"></i>${name}`;
+        li.onclick = () => {
+            clearResults();
+            const target = document.getElementById(`member-${reg_no}`);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                target.classList.add('highlight-member');
+                setTimeout(() => target.classList.remove('highlight-member'), 2000);
+            }
+        };
+        return li;
+    }
+
+    searchBar.addEventListener("input", () => {
+        const query = searchBar.value.trim();
+        clearResults();
+        if (!query) return;
+
+        const suggestions = searchSuggestions(query);
+        if (suggestions.length === 0) {
+            const li = document.createElement("li");
+            li.className = "list-group-item text-muted";
+            li.innerHTML = '<i class="fas fa-search me-2"></i>No matches found';
+            resultsList.appendChild(li);
+        } else {
+            suggestions.forEach(name => {
+                const reg_no = members[name];
+                resultsList.appendChild(createResultItem(name, reg_no));
+            });
+        }
+        resultsList.classList.add('show');
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!searchBar.contains(e.target) && !resultsList.contains(e.target)) {
+            clearResults();
+        }
+    });
+</script>
+
+<style>
+.highlight-member {
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+    transition: box-shadow 0.3s ease;
+}
+</style>
+{% endblock %}

@@ -20,8 +20,8 @@ from django.contrib import admin
 from django.urls import path, include
 from website.views import home, login, member_dashboard, account_dashboard, register_member, register_account, \
     create_post, verify_post, join_request, view_applications, upvote_application, update_application_status, like_post, \
-    account_profile, member_profile, logout, delete_post, edit_member_profile, edit_account_profile, delete_account, delete_member\
-    
+    account_profile, member_profile, logout, delete_post, edit_member_profile, edit_account_profile, delete_account, delete_member,\
+    view_members
 from drawapp import views
 from tracker import views as v1
 from AAAS import views as aaas_views
@@ -52,6 +52,7 @@ urlpatterns = [
     path('account/<int:reg_no>/edit/', edit_account_profile, name='edit_account_profile'),
     path('delete_account/<int:reg_no>/', delete_account, name='delete_account'),
     path('delete_member/<int:reg_no>/', delete_member, name='delete_member'),
+    path('view_members/', view_members, name='view_members'),
     # Scribble URLS
     
     path('draw/', views.draw_page, name='draw'),
@@ -66,7 +67,7 @@ urlpatterns = [
     # Tracker URLs
     path('tracker-home/',v1.home),
     path('add_member/',v1.add_members),
-    path('view_members/',v1.view_members),
+    #path('view_members/',v1.view_members),
     path('upload_attendance_file/',v1.upload_attendance_file),
     path('view_meetings/',v1.view_meetings),
     path('add_minutes/<str:code>/',v1.add_minutes),
