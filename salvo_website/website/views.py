@@ -3,6 +3,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.contrib import messages
 from django.db import models
 from django.http import JsonResponse
+from django.core.mail import send_mail
 from .models import Account, Member, Post, JoinRequest, PostLike
 from .forms import AccountRegistrationForm, MemberRegistrationForm, LoginForm, JoinRequestForm
 from .tagger import PostTagger
@@ -23,7 +24,35 @@ def register_account(request):
     if request.method == 'POST':
         form = AccountRegistrationForm(request.POST)
         if form.is_valid():
+            
+            #Send register number confirmation email here
+            raw_password = form.cleaned_data['password']
+            reg_no = form.cleaned_data['register_no']
+            email = f"{reg_no}@sastra.ac.in"
+            
             form.save()
+            try:
+                # Compose email
+                subject = "Welcome to SALVO AI Club - Your Login Credentials"
+                message = (
+                    f"Dear {reg_no},\n\n"
+                    "Welcome to SALVO AI Club!\n\n"
+                    "Here are your login credentials:\n"
+                    f"Username (Register Number): {reg_no}\n"
+                    f"Password: {raw_password}\n\n"
+                    "Please keep this information safe. We DON'T SAVE YOUR PASSWORDS, SO PLEASE NEVER FORGET THE LOGIN CREDENTIALS.\n\n"
+                    "Regards,\nSALVO AI Club"
+                )
+                send_mail(
+                    subject,
+                    message,
+                    'test@gmail.com',
+                    [email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                print("Error sending email:", e)
+            
             messages.success(request, "Account registered successfully!")
             return redirect(login)
     else:
@@ -67,7 +96,35 @@ def register_member(request):
     if request.method == 'POST':
         form = MemberRegistrationForm(request.POST)
         if form.is_valid():
+            
+            #Send register number confirmation email here
+            raw_password = form.cleaned_data['password']
+            reg_no = form.cleaned_data['register_no']
+            email = f"{reg_no}@sastra.ac.in"
+            
             form.save()
+            try:
+                # Compose email
+                subject = "Welcome to SALVO AI Club - Your Login Credentials"
+                message = (
+                    f"Dear {reg_no},\n\n"
+                    "Welcome to SALVO AI Club!\n\n"
+                    "Here are your login credentials:\n"
+                    f"Username (Register Number): {reg_no}\n"
+                    f"Password: {raw_password}\n\n"
+                    "Please keep this information safe. We DON'T SAVE YOUR PASSWORDS, SO PLEASE NEVER FORGET THE LOGIN CREDENTIALS.n\n"
+                    "Regards,\nSALVO AI Club"
+                )
+                send_mail(
+                    subject,
+                    message,
+                    'test@gmail.com',
+                    [email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                print("Error sending email:", e)
+                
             messages.success(request, "Member registered successfully!")
             return redirect(member_dashboard)
     
