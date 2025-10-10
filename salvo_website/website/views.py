@@ -35,13 +35,22 @@ def register_account(request):
                 # Compose email
                 subject = "Welcome to SALVO AI Club - Your Login Credentials"
                 message = (
+                    f"Subject: Welcome to SALVO AI Club - Your Login Credentials\n\n"
                     f"Dear {reg_no},\n\n"
-                    "Welcome to SALVO AI Club!\n\n"
-                    "Here are your login credentials:\n"
-                    f"Username (Register Number): {reg_no}\n"
-                    f"Password: {raw_password}\n\n"
-                    "Please keep this information safe. We DON'T SAVE YOUR PASSWORDS, SO PLEASE NEVER FORGET THE LOGIN CREDENTIALS.\n\n"
-                    "Regards,\nSALVO AI Club"
+                    "Congratulations! Your registration with the SALVO AI Club at SASTRA University has been successful.\n\n"
+                    "You now have access to the SALVO AI Club portal, where you can explore AI resources, participate in discussions, and view community projects.\n\n"
+                    "To become an official club member and participate in exclusive events, please submit a membership application from your dashboard. Our team will review your application and notify you of your membership status.\n\n"
+                    "Below are your login credentials for accessing the SALVO AI Club portal:\n\n"
+                    f"    Username (Register Number): {reg_no}\n"
+                    f"    Password: {raw_password}\n\n"
+                    "Please keep this information confidential and secure. For your safety, we do NOT store your password in plain text. "
+                    "After logging in for the first time, we strongly recommend that you change your password via your profile page.\n\n"
+                    "If you have any questions or need assistance, feel free to reach out to the club coordinators or reply to this email.\n\n"
+                    "We look forward to your active participation in the SALVO AI Club!\n\n"
+                    "Best regards,\n"
+                    "SALVO AI Developer Team\n"
+                    "SASTRA University\n"
+                    "Email: salvo.aics@gmail.com\n"
                 )
                 send_mail(
                     subject,
@@ -101,19 +110,28 @@ def register_member(request):
             raw_password = form.cleaned_data['password']
             reg_no = form.cleaned_data['register_no']
             email = f"{reg_no}@sastra.ac.in"
-            
+            role=form.cleaned_data['club_role']
             form.save()
             try:
                 # Compose email
                 subject = "Welcome to SALVO AI Club - Your Login Credentials"
                 message = (
+                    f"Subject: Welcome to SALVO AI Club - Your Membership Credentials\n\n"
                     f"Dear {reg_no},\n\n"
-                    "Welcome to SALVO AI Club!\n\n"
-                    "Here are your login credentials:\n"
-                    f"Username (Register Number): {reg_no}\n"
-                    f"Password: {raw_password}\n\n"
-                    "Please keep this information safe. We DON'T SAVE YOUR PASSWORDS, SO PLEASE NEVER FORGET THE LOGIN CREDENTIALS.n\n"
-                    "Regards,\nSALVO AI Club"
+                    f"Congratulations! You have been registered as a {role} in the SALVO AI Club at SASTRA University.\n\n"
+                    "As a club member, you are now part of a dynamic network of AI enthusiasts, innovators, and leaders. "
+                    "Your role grants you access to exclusive resources, events, and collaborative opportunities to advance your skills and contribute to the club's initiatives.\n\n"
+                    "Below are your login credentials for accessing the SALVO AI Club portal:\n\n"
+                    f"    Username (Register Number): {reg_no}\n"
+                    f"    Password: {raw_password}\n\n"
+                    "Please keep this information confidential and secure. For your safety, we do NOT store your password in plain text. "
+                    "After logging in for the first time, we strongly recommend that you change your password via your profile page.\n\n"
+                    "If you have any questions or need assistance, feel free to reach out to the club coordinators or reply to this email.\n\n"
+                    "We are excited to see your contributions and leadership in the SALVO AI Club!\n\n"
+                    "Best regards,\n"
+                    "SALVO AI Developer Team\n"
+                    "SASTRA University\n"
+                    "Email: salvo.aics@gmail.com\n"
                 )
                 send_mail(
                     subject,
