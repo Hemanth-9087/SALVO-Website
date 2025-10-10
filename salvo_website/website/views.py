@@ -3,6 +3,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.contrib import messages
 from django.db import models
 from django.http import JsonResponse
+from django.core.mail import send_mail
 from .models import Account, Member, Post, JoinRequest, PostLike
 from .forms import AccountRegistrationForm, MemberRegistrationForm, LoginForm, JoinRequestForm
 from .tagger import PostTagger
@@ -23,7 +24,44 @@ def register_account(request):
     if request.method == 'POST':
         form = AccountRegistrationForm(request.POST)
         if form.is_valid():
+            
+            #Send register number confirmation email here
+            raw_password = form.cleaned_data['password']
+            reg_no = form.cleaned_data['register_no']
+            email = f"{reg_no}@sastra.ac.in"
+            
             form.save()
+            try:
+                # Compose email
+                subject = "Welcome to SALVO AI Club - Your Login Credentials"
+                message = (
+                    f"Subject: Welcome to SALVO AI Club - Your Login Credentials\n\n"
+                    f"Dear {reg_no},\n\n"
+                    "Congratulations! Your registration with the SALVO AI Club at SASTRA University has been successful.\n\n"
+                    "You now have access to the SALVO AI Club portal, where you can explore AI resources, participate in discussions, and view community projects.\n\n"
+                    "To become an official club member and participate in exclusive events, please submit a membership application from your dashboard. Our team will review your application and notify you of your membership status.\n\n"
+                    "Below are your login credentials for accessing the SALVO AI Club portal:\n\n"
+                    f"    Username (Register Number): {reg_no}\n"
+                    f"    Password: {raw_password}\n\n"
+                    "Please keep this information confidential and secure. For your safety, we do NOT store your password in plain text. "
+                    "After logging in for the first time, we strongly recommend that you change your password via your profile page.\n\n"
+                    "If you have any questions or need assistance, feel free to reach out to the club coordinators or reply to this email.\n\n"
+                    "We look forward to your active participation in the SALVO AI Club!\n\n"
+                    "Best regards,\n"
+                    "SALVO AI Developer Team\n"
+                    "SASTRA University\n"
+                    "Email: salvo.aics@gmail.com\n"
+                )
+                send_mail(
+                    subject,
+                    message,
+                    'test@gmail.com',
+                    [email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                print("Error sending email:", e)
+            
             messages.success(request, "Account registered successfully!")
             return redirect(login)
     else:
@@ -67,7 +105,44 @@ def register_member(request):
     if request.method == 'POST':
         form = MemberRegistrationForm(request.POST)
         if form.is_valid():
+            
+            #Send register number confirmation email here
+            raw_password = form.cleaned_data['password']
+            reg_no = form.cleaned_data['register_no']
+            email = f"{reg_no}@sastra.ac.in"
+            role=form.cleaned_data['club_role']
             form.save()
+            try:
+                # Compose email
+                subject = "Welcome to SALVO AI Club - Your Login Credentials"
+                message = (
+                    f"Subject: Welcome to SALVO AI Club - Your Membership Credentials\n\n"
+                    f"Dear {reg_no},\n\n"
+                    f"Congratulations! You have been registered as a {role} in the SALVO AI Club at SASTRA University.\n\n"
+                    "As a club member, you are now part of a dynamic network of AI enthusiasts, innovators, and leaders. "
+                    "Your role grants you access to exclusive resources, events, and collaborative opportunities to advance your skills and contribute to the club's initiatives.\n\n"
+                    "Below are your login credentials for accessing the SALVO AI Club portal:\n\n"
+                    f"    Username (Register Number): {reg_no}\n"
+                    f"    Password: {raw_password}\n\n"
+                    "Please keep this information confidential and secure. For your safety, we do NOT store your password in plain text. "
+                    "After logging in for the first time, we strongly recommend that you change your password via your profile page.\n\n"
+                    "If you have any questions or need assistance, feel free to reach out to the club coordinators or reply to this email.\n\n"
+                    "We are excited to see your contributions and leadership in the SALVO AI Club!\n\n"
+                    "Best regards,\n"
+                    "SALVO AI Developer Team\n"
+                    "SASTRA University\n"
+                    "Email: salvo.aics@gmail.com\n"
+                )
+                send_mail(
+                    subject,
+                    message,
+                    'test@gmail.com',
+                    [email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                print("Error sending email:", e)
+                
             messages.success(request, "Member registered successfully!")
             return redirect(member_dashboard)
     
