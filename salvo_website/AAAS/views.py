@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
 from website.models import Account, Member
 from django.contrib import messages
+from django.db.models import Q
 # Create your views here.
 #define a function for upploading open source AI models and store the files by mapping it with models.py
 def upload_model(request):
@@ -48,8 +49,16 @@ def upload_model(request):
     return render(request, 'AAAS/post_openmodel.html')
 
 def aaas_repository(request):
-    # Fetch all models
-    models = AAAS.objects.all().order_by('-uploaded_at')
+    # Get search query from GET parameters
+    query = request.GET.get('q', '').strip()
+
+    # Filter models based on query
+    if query:
+        models = AAAS.objects.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        ).order_by('-uploaded_at')
+    else:
+        models = AAAS.objects.all().order_by('-uploaded_at')
 
     # Check if the current user is a member
     register_no = request.session.get('register_no')
@@ -58,6 +67,7 @@ def aaas_repository(request):
     return render(request, 'AAAS/aaas_repository.html', {
         'models': models,
         'member': member,  # Pass the member object to the template
+        'query': query,    # Pass the query to the template for display
     })
 
 def aaas_detail(request, model_id):
