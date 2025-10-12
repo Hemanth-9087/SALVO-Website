@@ -1,0 +1,25 @@
+{% extends 'base.html' %} 
+{% block title %}Error - SALVO AI Club{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="ai-card animate-on-scroll" style="margin-top: 50px;">
+                <div class="text-center mb-4">
+                    <h2 class="code-font" style="color: var(--accent-red); margin-bottom: 15px;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Error
+                    </h2>
+                    <p class="fs-5" style="color: orange;">{{ message }}</p>
+                    <p class="text-secondary fs-5">Please try again or contact support if the issue persists.</p>
+                </div>
+                <div class="text-center">
+                    <a href="/" class="btn-ai-primary">
+                        <i class="fas fa-home me-2"></i>Go to Homepage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

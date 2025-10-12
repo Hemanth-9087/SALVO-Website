@@ -42,6 +42,7 @@ def send_custom_email(to_email, from_email, subject, body):
                     [to_email],
                     fail_silently=False,
                 )
+                print("Sent a mail to ", to_email)
             except Exception as e:
                 print("Error sending email:", e)
 
@@ -65,7 +66,7 @@ def register_account(request):
             raw_password = form.cleaned_data['password']
             email = f"{reg_no}@sastra.ac.in"
 
-            form.save()
+            
             try:
                 # Compose email
                 subject = "Welcome to SALVO AI Club - Your Login Credentials"
@@ -94,8 +95,11 @@ def register_account(request):
                     [email],
                     fail_silently=False,
                 )
+                print("Sent a mail to ", email)
+                form.save()
             except Exception as e:
                 print("Error sending email:", e)
+                return render(request, 'error.html', {'message': 'Error sending confirmation email. Please contact support or Retry later.'})
 
             messages.success(request, "Account registered successfully!")
             return redirect(login)
@@ -146,7 +150,7 @@ def register_member(request):
             reg_no = form.cleaned_data['register_no']
             email = f"{reg_no}@sastra.ac.in"
             role=form.cleaned_data['club_role']
-            form.save()
+            
             try:
                 # Compose email
                 subject = "Welcome to SALVO AI Club - Your Login Credentials"
@@ -175,8 +179,11 @@ def register_member(request):
                     [email],
                     fail_silently=False,
                 )
+                print("Sent a mail to ", email)
+                form.save()
             except Exception as e:
                 print("Error sending email:", e)
+                return render(request, 'error.html', {'message': 'Error sending confirmation email. Please contact support or Retry later.'})
                 
             messages.success(request, "Member registered successfully!")
             return redirect(member_dashboard)
@@ -422,24 +429,29 @@ def join_request(request, reg_no):
                 join_req = form.save(commit=False)
                 join_req.account = account
                 join_req.status = 'Pending'
-                join_req.save()
-                # send email for confirmation submission of application
-                to_email = f"{account.register_no}@sastra.ac.in"
-                from_email = "salvo.aics@gmail.com"
-                subject = "SALVO AI Club - Membership Application Submitted"
-                body = (
-                    f"Dear {account.name},\n\n"
-                    "Thank you for submitting your membership application to the SALVO AI Club at SASTRA University.\n\n"
-                    "Your application has been received and is currently under review by our club coordinators. "
-                    "You will receive further communication via email regarding the status of your application (Accepted/Rejected) once it has been processed.\n\n"
-                    "If you have any questions or need assistance, please feel free to reach out to the club coordinators or reply to this email.\n\n"
-                    "Best regards,\n"
-                    "SALVO AI Developer Team\n"
-                    "SASTRA University\n"
-                    "Email: salvo.aics@gmail.com\n"
-                )
-                send_custom_email(to_email, from_email, subject, body)
-                return redirect('account_dashboard')
+                
+                try:
+                    # send email for confirmation submission of application
+                    to_email = f"{account.register_no}@sastra.ac.in"
+                    from_email = "salvo.aics@gmail.com"
+                    subject = "SALVO AI Club - Membership Application Submitted"
+                    body = (
+                        f"Dear {account.name},\n\n"
+                        "Thank you for submitting your membership application to the SALVO AI Club at SASTRA University.\n\n"
+                        "Your application has been received and is currently under review by our club coordinators. "
+                        "You will receive further communication via email regarding the status of your application (Accepted/Rejected) once it has been processed.\n\n"
+                        "If you have any questions or need assistance, please feel free to reach out to the club coordinators or reply to this email.\n\n"
+                        "Best regards,\n"
+                        "SALVO AI Developer Team\n"
+                        "SASTRA University\n"
+                        "Email: salvo.aics@gmail.com\n"
+                    )
+                    send_custom_email(to_email, from_email, subject, body)
+                    join_req.save()
+                    return redirect('account_dashboard')
+                except Exception as e:
+                    print("Error sending email:", e)
+                    return render(request, 'error.html', {'message': 'Error sending confirmation email. Please contact support or Retry later.'})
         else:
             form = JoinRequestForm()
         return render(request, 'reapply_join_request.html', {'form': form, 'prev_request': existing})
@@ -519,46 +531,48 @@ def update_application_status(request, app_id, action):
     member = Member.objects.get(register_no=request.session['register_no'])
     if member.club_role not in ['Lead', 'Coordinator']:
         return HttpResponse("Unauthorized", status=401)
-
-    app = JoinRequest.objects.get(id=app_id)
-    if action == 'accept':
-        app.status = 'Accepted'
-        # Send email to user about acceptance to become a part of the team as member
-        to_email = f"{app.account.register_no}@sastra.ac.in"
-        from_email = "salvo.aics@gmail.com"
-        subject = "Congratulations! Your Membership Application is Accepted - SALVO AI Club"
-        body = (
-            f"Dear {app.account.name},\n\n"
-            "We are pleased to inform you that your application to join the SALVO AI Club at SASTRA University has been accepted!\n\n"
-            "Welcome to the team! You now have access to exclusive club resources, events, and opportunities to collaborate with fellow AI enthusiasts.\n\n"
-            "If you have any questions or need assistance, feel free to reach out to the club coordinators or reply to this email.\n\n"
-            "We look forward to your active participation and contributions to the SALVO AI Club. You can use the same credentials you used before.\n\n"
-            "Best regards,\n"
-            "SALVO AI Developer Team\n"
-            "SASTRA University\n"
-            "Email: salvo.aics@gmail.com\n"
-        )
-        send_custom_email(to_email, from_email, subject, body)
-        create_member_from_acccount(app.account)
-    elif action == 'reject':
-        app.status = 'Rejected'
-        # Send email to user about rejection of application
-        to_email = f"{app.account.register_no}@sastra.ac.in"
-        from_email = "salvo.aics@gmail.com"
-        subject = "Membership Application Rejected - SALVO AI Club"
-        body = (
-            f"Dear {app.account.name},\n\n"
-            "We regret to inform you that your application to join the SALVO AI Club at SASTRA University has not been accepted at this time.\n\n"
-            "We encourage you to continue developing your skills and consider reapplying in the future. If you have any questions or would like feedback on your application, please feel free to reach out to the club coordinators or reply to this email.\n\n"
-            "Thank you for your interest in the SALVO AI Club.\n\n"
-            "Best regards,\n"
-            "SALVO AI Developer Team\n"
-            "SASTRA University\n"
-            "Email: salvo.aics@gmail.com\n"
-        )
-        send_custom_email(to_email, from_email, subject, body)
-        
-    app.save()
+    try:
+        app = JoinRequest.objects.get(id=app_id)
+        if action == 'accept':
+            app.status = 'Accepted'
+            # Send email to user about acceptance to become a part of the team as member
+            to_email = f"{app.account.register_no}@sastra.ac.in"
+            from_email = "salvo.aics@gmail.com"
+            subject = "Congratulations! Your Membership Application is Accepted - SALVO AI Club"
+            body = (
+                f"Dear {app.account.name},\n\n"
+                "We are pleased to inform you that your application to join the SALVO AI Club at SASTRA University has been accepted!\n\n"
+                "Welcome to the team! You now have access to exclusive club resources, events, and opportunities to collaborate with fellow AI enthusiasts.\n\n"
+                "If you have any questions or need assistance, feel free to reach out to the club coordinators or reply to this email.\n\n"
+                "We look forward to your active participation and contributions to the SALVO AI Club. You can use the same credentials you used before.\n\n"
+                "Best regards,\n"
+                "SALVO AI Developer Team\n"
+                "SASTRA University\n"
+                "Email: salvo.aics@gmail.com\n"
+            )
+            send_custom_email(to_email, from_email, subject, body)
+            create_member_from_acccount(app.account)
+        elif action == 'reject':
+            app.status = 'Rejected'
+            # Send email to user about rejection of application
+            to_email = f"{app.account.register_no}@sastra.ac.in"
+            from_email = "salvo.aics@gmail.com"
+            subject = "Membership Application Rejected - SALVO AI Club"
+            body = (
+                f"Dear {app.account.name},\n\n"
+                "We regret to inform you that your application to join the SALVO AI Club at SASTRA University has not been accepted at this time.\n\n"
+                "We encourage you to continue developing your skills and consider reapplying in the future. If you have any questions or would like feedback on your application, please feel free to reach out to the club coordinators or reply to this email.\n\n"
+                "Thank you for your interest in the SALVO AI Club.\n\n"
+                "Best regards,\n"
+                "SALVO AI Developer Team\n"
+                "SASTRA University\n"
+                "Email: salvo.aics@gmail.com\n"
+            )
+            send_custom_email(to_email, from_email, subject, body)
+        app.save()
+    except Exception as e:
+        print("Error updating application status:", e) 
+        return render(request, 'error.html', {'message': 'Error updating application status. Please contact support. or Try againg later.'})
     return redirect('view_applications')
 
 
@@ -647,8 +661,10 @@ def edit_member_profile(request, reg_no):
                 [email],
                 fail_silently=False,
             )
+            print("Sent a mail to ", email)
         except Exception as e:
             print("Error sending email:", e)
+            return render(request, 'error.html', {'message': 'Error sending confirmation email. Please contact support or Retry later.'})
         #messages.success(request, "Profile updated successfully!")
         return redirect('member_profile', reg_no=reg_no)
 
@@ -667,7 +683,7 @@ def edit_account_profile(request, reg_no):
         password = request.POST.get('password')
         if password:  # Only update the password if provided
             account.password = make_password(password)
-        account.save()
+        
         try:
             email = f"{account.register_no}@sastra.ac.in"
             # Compose email
@@ -693,8 +709,11 @@ def edit_account_profile(request, reg_no):
                 [email],
                 fail_silently=False,
             )
+            print("Sent a mail to ", email)
+            account.save()
         except Exception as e:
             print("Error sending email:", e)
+            return render(request, 'error.html', {'message': 'Error sending confirmation email. Please contact support or Retry later.'})
         #messages.success(request, "Profile updated successfully!")
         return redirect('account_profile', reg_no=reg_no)
 
