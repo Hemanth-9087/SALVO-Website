@@ -55,7 +55,7 @@ def register_account(request):
                 send_mail(
                     subject,
                     message,
-                    'test@gmail.com',
+                    'salvo.aics@gmail.com',
                     [email],
                     fail_silently=False,
                 )
@@ -136,7 +136,7 @@ def register_member(request):
                 send_mail(
                     subject,
                     message,
-                    'test@gmail.com',
+                    'salvo.aics@gmail.com',
                     [email],
                     fail_silently=False,
                 )

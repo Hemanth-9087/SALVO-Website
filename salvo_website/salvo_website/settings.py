@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import dotenv
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMP_DIR = os.path.join(BASE_DIR, 'templates')
+dotenv_path=BASE_DIR /'.env'
+dotenv.load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -25,7 +28,8 @@ SECRET_KEY = 'django-insecure-aiw(0k*fr05@@eq2&8+)+l&e_h^=l*u1)z%e)6^!$#r#_-82v*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["172.16.21.153",'localhost','.ngrok-free.dev']
+
 
 
 # Application definition
@@ -44,6 +48,7 @@ INSTALLED_APPS = [
     'tracker',
     'visualizations',
     'AAAS',
+    'sslserver',
 ]
 
 MIDDLEWARE = [
@@ -199,5 +204,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'salvo.aics@gmail.com'
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # Use Gmail App Password, not your raw Gmail password
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Use Gmail App Password, not your raw Gmail password
 DEFAULT_FROM_EMAIL = 'salvo.aics@gmail.com'

@@ -23,7 +23,7 @@ from datetime import datetime
 import shutil
 # Create your views here.
 
-DEFAULT_MODEL_FILENAME= "step_176000.keras"
+DEFAULT_MODEL_FILENAME= "StackPainter27.keras"
 # === Global Constants ===
 MODEL_PATH = os.path.join(os.path.dirname(__file__), DEFAULT_MODEL_FILENAME)
 MODELS_DIR = os.path.join(settings.MEDIA_ROOT, 'models')
@@ -231,7 +231,7 @@ def delete_model(request):
             return JsonResponse({'success': False, 'error': 'Filename required'})
         
         # Don't allow deleting default model
-        if filename == 'step_176000.keras':
+        if filename == 'StackPainter27.keras':
             return JsonResponse({'success': False, 'error': 'Cannot delete default model'})
         
         filepath = os.path.join(MODELS_DIR, filename)
@@ -255,7 +255,7 @@ def delete_model(request):
 
 
 # === Global Constants ===
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "step_176000.keras")
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "StackPainter27.keras")
 
 # Load model only once
 from threading import Lock
