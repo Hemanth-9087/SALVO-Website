@@ -602,7 +602,7 @@ def like_post(request, post_id):
 
 
 def account_profile(request, reg_no):
-    if 'register_no' not in request.session or request.session['user_type'] != 'account':
+    if 'register_no' not in request.session:
         return redirect('login')
     session_user=request.session['register_no']
     account = Account.objects.get(register_no=reg_no)
@@ -613,7 +613,7 @@ def account_profile(request, reg_no):
 
 
 def member_profile(request, reg_no):
-    if 'register_no' not in request.session or request.session['user_type'] != 'member':
+    if 'register_no' not in request.session:
         return redirect('login')
     session_user=request.session['register_no']
     member = Member.objects.get(register_no=reg_no)

@@ -313,14 +313,15 @@
             {% csrf_token %}
             <div class="file-input-container">
                 <label for="modelFile" class="file-input-label">
-                    <i class="fas fa-folder-open me-2"></i>Select .keras File
+                    <i class="fas fa-folder-open me-2 disabled"></i>Select .keras File
                 </label>
                 <input type="file" id="modelFile" name="model_file" accept=".keras" required>
                 <span id="selectedFileName" class="selected-file">No file selected</span>
             </div>
-            <button type="submit" class="upload-btn" id="uploadBtn" disabled>
+            <button type="submit" class="upload-btn disabled" id="uploadBtn" disabled>
                 <i class="fas fa-rocket me-2"></i>Deploy Model
             </button>
+            <br><br><span id="selectedFileName" class="selected-file">Competition disabled for now...</span>
         </form>
 
         <!-- Upload Info -->
