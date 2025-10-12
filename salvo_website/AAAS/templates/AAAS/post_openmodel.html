@@ -12,10 +12,13 @@
                     <h2 class="code-font" style="color: var(--accent-green); margin-bottom: 15px;">
                         <i class="fas fa-upload me-2"></i>Upload AI Model / Dataset
                     </h2>
-                    <p class="text-secondary fs-5">{{message}}</p>
+                    
+                    <p class="fs-5" style="color: orange;">{{message}}</p>
                     <p class="text-secondary fs-5">Share your models, , documentation, and code with the community</p>
                 </div>
-                
+                <div class="alert alert-warning" role="alert">
+                    <strong>Legal Notice:</strong> Uploading restricted, illegal, or NSFW content is strictly prohibited. Legal action will be taken against violators. SIze Limits restricted to 120 MB per file.
+                </div>
 
                 <form method="POST" enctype="multipart/form-data" class="px-2" id="uploadForm">
                     {% csrf_token %}
@@ -42,7 +45,7 @@
                         <input type="file" class="form-control" id="model_file" name="model_file"
                                accept=".h5,.keras,.onnx,.pt,.pth,.pb,.ckpt,.tflite,.zip" >
                         <div class="form-text text-secondary">
-                            Supported formats: Keras, ONNX, TensorFlow, PyTorch, ZIP
+                            Supported formats: H5, Keras, Onnx, Pt, Pth, Pb, Ckpt, TFLite, Zip
                         </div>
                     </div>
 
@@ -51,7 +54,10 @@
                             <i class="fas fa-file-alt me-2"></i>Documentation File (PDF)
                         </label>
                         <input type="file" class="form-control" id="documentation_file" name="documentation_file"
-                               accept=".pdf" >
+                               accept=".pdf,.docx" >
+                        <div class="form-text text-secondary">
+                            Supported formats: Pdf, Docx
+                        </div>
                     </div>
 
                     <div class="mb-4">
@@ -59,9 +65,9 @@
                             <i class="fas fa-database me-2"></i>Dataset File
                         </label>
                         <input type="file" class="form-control" id="dataset_file" name="dataset_file"
-                               accept=".csv,.xlsx,.zip" >
+                               accept=".csv,.xlsx,.zip,.tsv" >
                         <div class="form-text text-secondary">
-                            Supported formats: CSV, Excel, ZIP
+                            Supported formats: CSV, TSV, Excel, Zip
                         </div>
                     </div>
 
@@ -70,9 +76,10 @@
                             <i class="fas fa-code me-2"></i>Code File
                         </label>
                         <input type="file" class="form-control" id="code_file" name="code_file"
-                               accept=".py,.ipynb,.zip" >
+                               accept=".py,.ipynb,.zip,.java,.cpp,.c,.js,.rb,.go,.rs,.php,.html,.css,.json,.xml,.sh,.pl,.r,.swift,.kt,.m,.scala,.jl}" >
+                               
                         <div class="form-text text-secondary">
-                            Supported formats: Python, Jupyter Notebook, ZIP
+                            Supported formats: All Popular Code Formats (e.g., Py, Ipynb, C, C++, Java, R, etc.), Zip
                         </div>
                     </div>
 
@@ -100,6 +107,11 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
       {
         e.preventDefault();
         alert("Unsuccessful: Please fill in the project name, description, and upload at least one file (model, documentation, dataset, or code).");
+        return false;
+    }
+    // Legal warning
+    if (!confirm("Warning: Uploading restricted, illegal, or NSFW content is strictly prohibited. Legal action will be taken against violators. Do you wish to proceed?")) {
+        e.preventDefault();
         return false;
     }
 });

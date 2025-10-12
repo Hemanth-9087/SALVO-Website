@@ -5,8 +5,15 @@ from django.urls import reverse
 from website.models import Account, Member
 from django.contrib import messages
 from django.db.models import Q
+import os
 # Create your views here.
 #define a function for upploading open source AI models and store the files by mapping it with models.py
+
+def allowed_file(filename, allowed_exts):
+    ext = os.path.splitext(filename)[1].lower()
+    return ext in allowed_exts
+
+
 def upload_model(request):
     #check session id to get register number
     #check if session id is invalid, if so redirect it to login page
@@ -24,6 +31,31 @@ def upload_model(request):
         code_file = request.FILES.get('code_file')
         #get registration number from session
         register_no = request.session.get('register_no')
+        
+         # Allowed extensions
+        model_exts = {'.h5', '.keras', '.onnx', '.pt', '.pth', '.pb', '.ckpt', '.tflite', '.zip'}
+        doc_exts = {'.pdf','.docx', '.txt', '.md', '.zip'}
+        dataset_exts = {'.csv', '.tsv', '.xlsx', '.zip'}
+        code_exts = {'.py', '.ipynb', '.zip', '.java', '.cpp', '.c', '.js', '.rb', '.go', '.rs', '.php', '.html', '.css', '.json', '.xml', '.sh', '.pl', '.r', '.swift', '.kt', '.m', '.scala', '.jl'}
+
+        error_msgs = []
+        
+        # File size and extension checks
+        def check_file(file, allowed_exts, label):
+            if file:
+                if file.size > 120 * 1024 * 1024:
+                    error_msgs.append(f"\n{label} exceeds 120MB limit.")
+                if not allowed_file(file.name, allowed_exts):
+                    error_msgs.append(f"\n{label} has invalid file extension.")
+        
+        check_file(model_file, model_exts, "Model file")
+        check_file(documentation_file, doc_exts, "Documentation file")
+        check_file(dataset_file, dataset_exts, "Dataset file")
+        check_file(code_file, code_exts, "Code file")
+        
+        if error_msgs:
+            msg = "Upload failed: " + " ".join(error_msgs)
+            return render(request, 'AAAS/post_openmodel.html', {'message': msg})
         
         #save the files to database
         new_model = AAAS(
@@ -46,7 +78,7 @@ def upload_model(request):
         #print(msg)
         return render(request, 'AAAS/post_openmodel.html', {'model': new_model, 'message': msg})
 
-    return render(request, 'AAAS/post_openmodel.html')
+    return render(request, 'AAAS/post_openmodel.html', {'message': ''})
 
 def aaas_repository(request):
     # Get search query from GET parameters
