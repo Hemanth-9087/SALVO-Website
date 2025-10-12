@@ -538,8 +538,34 @@ def edit_member_profile(request, reg_no):
         if password:  # Only update the password if provided
             member.password = make_password(password)
         member.save()
-
-        messages.success(request, "Profile updated successfully!")
+        try:
+            email = f"{member.register_no}@sastra.ac.in"
+            # Compose email
+            subject = "Password Changed Successfully - SALVO AI Club"
+            message = (
+                f"Password Changed Successfully - SALVO AI Club\n\n"
+                f"Dear {member.name},\n\n"
+                "Your password for the SALVO AI Club portal at SASTRA University has been changed successfully.\n\n"
+                f"Your new password: {password}\n\n"
+                "If you did not request this change, please contact the club coordinators immediately.\n\n"
+                "For your security, we do NOT store your password in plain text. Please keep your password confidential and do not share it with anyone.\n\n"
+                "You can now log in to the portal using your register number and your new password.\n\n"
+                "If you have any questions or need assistance, feel free to reach out to the club coordinators or reply to this email.\n\n"
+                "Best regards,\n"
+                "SALVO AI Developer Team\n"
+                "SASTRA University\n"
+                "Email: salvo.aics@gmail.com\n"
+            )
+            send_mail(
+                subject,
+                message,
+                'salvo.aics@gmail.com',
+                [email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print("Error sending email:", e)
+        #messages.success(request, "Profile updated successfully!")
         return redirect('member_profile', reg_no=reg_no)
 
     return render(request, 'edit_member_profile.html', {'member': member})
@@ -558,8 +584,34 @@ def edit_account_profile(request, reg_no):
         if password:  # Only update the password if provided
             account.password = make_password(password)
         account.save()
-
-        messages.success(request, "Profile updated successfully!")
+        try:
+            email = f"{account.register_no}@sastra.ac.in"
+            # Compose email
+            subject = "Password Changed Successfully - SALVO AI Club"
+            message = (
+                f"Password Changed Successfully - SALVO AI Club\n\n"
+                f"Dear {account.name},\n\n"
+                "Your password for the SALVO AI Club portal at SASTRA University has been changed successfully.\n\n"
+                f"Your new password: {password}\n\n"
+                "If you did not request this change, please contact the club coordinators immediately.\n\n"
+                "For your security, we do NOT store your password in plain text. Please keep your password confidential and do not share it with anyone.\n\n"
+                "You can now log in to the portal using your register number and your new password.\n\n"
+                "If you have any questions or need assistance, feel free to reach out to the club coordinators or reply to this email.\n\n"
+                "Best regards,\n"
+                "SALVO AI Developer Team\n"
+                "SASTRA University\n"
+                "Email: salvo.aics@gmail.com\n"
+            )
+            send_mail(
+                subject,
+                message,
+                'salvo.aics@gmail.com',
+                [email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print("Error sending email:", e)
+        #messages.success(request, "Profile updated successfully!")
         return redirect('account_profile', reg_no=reg_no)
 
     return render(request, 'edit_account_profile.html', {'account': account})
@@ -567,13 +619,13 @@ def edit_account_profile(request, reg_no):
 def delete_account(request, reg_no):
     member = get_object_or_404(Account, register_no=reg_no)
     member.delete()
-    messages.error(request, "Your account has been deleted.")
+    #messages.error(request, "Your account has been deleted.")
     return redirect('logout')  # change 'home' to your desired redirect
 
 def delete_member(request, reg_no):
     member = get_object_or_404(Member, register_no=reg_no)
     member.delete()
-    messages.error(request, "Your account has been deleted.")
+    #messages.error(request, "Your account has been deleted.")
     return redirect('logout')  # change 'home' to your desired redirect
 
 def logout(request):

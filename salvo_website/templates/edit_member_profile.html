@@ -54,6 +54,9 @@
     .btn-save:hover {
         background: linear-gradient(45deg, var(--primary-blue), var(--primary-purple));
     }
+    .text-danger {
+        color: #ff4d4f !important;
+    }
 </style>
 {% endblock %}
 
@@ -63,7 +66,7 @@
         <h2 class="code-font text-center mb-4" style="color: var(--accent-green);">
             <i class="fas fa-edit me-2"></i>Edit Profile
         </h2>
-        <form method="POST">
+        <form method="POST" id="editProfileForm">
             {% csrf_token %}
             <div class="mb-4">
                 <label for="name" class="form-label">Name</label>
@@ -77,8 +80,15 @@
                 <label for="password" class="form-label">Password</label>
                 <input type="password" id="password" name="password" class="form-control" placeholder="Leave blank to keep current password">
             </div>
-            <div class="text-center">
-                <button type="submit" class="btn btn-save">
+            <div class="mb-4">
+                <label for="confirm_password" class="form-label">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Re-enter password if changing">
+                <div id="confirmPasswordError" class="text-danger mt-1" style="display:none;">
+                    <small><i class="fas fa-exclamation-circle me-1"></i>Passwords do not match.</small>
+                </div>
+            </div>
+            <div class="text-center" style="margin-bottom: 10px;">
+                <button type="submit" class="btn btn-save" id="saveBtn">
                     <i class="fas fa-save me-2"></i>Save Changes
                 </button>
                 <button type="button" class="btn btn-danger" style="border-radius:25px;" onclick="confirmDelete()">
@@ -95,5 +105,38 @@
             window.location.href = "{% url 'delete_member' member.register_no %}";
         }
     }
+
+    // Password match validation
+    const editProfileForm = document.getElementById('editProfileForm');
+    const passwordField = document.getElementById('password');
+    const confirmPasswordField = document.getElementById('confirm_password');
+    const confirmPasswordError = document.getElementById('confirmPasswordError');
+    const saveBtn = document.getElementById('saveBtn');
+
+    function checkPasswordsMatch() {
+        // Only check if password field is not empty
+        if (passwordField.value !== "") {
+            if (passwordField.value !== confirmPasswordField.value) {
+                confirmPasswordError.style.display = 'block';
+                saveBtn.disabled = true;
+            } else {
+                confirmPasswordError.style.display = 'none';
+                saveBtn.disabled = false;
+            }
+        } else {
+            confirmPasswordError.style.display = 'none';
+            saveBtn.disabled = false;
+        }
+    }
+
+    confirmPasswordField.addEventListener('input', checkPasswordsMatch);
+    passwordField.addEventListener('input', checkPasswordsMatch);
+
+    editProfileForm.addEventListener('submit', function(e) {
+        if (passwordField.value !== "" && passwordField.value !== confirmPasswordField.value) {
+            confirmPasswordError.style.display = 'block';
+            e.preventDefault();
+        }
+    });
 </script>
 {% endblock %}
