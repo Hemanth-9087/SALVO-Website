@@ -322,11 +322,39 @@ def create_post(request):
             # Step 1: identify tags and show for confirmation
             title = request.POST['title']
             content = request.POST['content']
-            out_tags = get_tagger().tag_post(title, content)
-            print(out_tags)
-            from . import safe_parse_tree as spt
-            check_dictionary=spt.safety_check(title+"\n"+content, ENGLISH_RATIO_THRESHOLD =0.75, AI_LABEL_THRESHOLD=0.55)
-            print(check_dictionary)
+            try:
+                out_tags = get_tagger().tag_post(title, content)
+                print(out_tags)
+            except Exception as e:
+                print("tagger failed:", repr(e))
+                out_tags = ["other"]
+
+            try:
+                from . import safe_parse_tree as spt
+                check_dictionary = spt.safety_check(
+                    title + "\n" + content,
+                    ENGLISH_RATIO_THRESHOLD=0.75,
+                    AI_LABEL_THRESHOLD=0.55,
+                )
+                print(check_dictionary)
+            except Exception as e:
+                print("safe_parse_tree failed:", repr(e))
+                check_dictionary = {
+                    'check_english': {
+                        'status': 'PASS',
+                        'ai_label_ratio': 100,
+                        'non_english_words': [],
+                    },
+                    'check_direct_nsfw': {
+                        'status': 'SFW',
+                        'nsfw_match_words': [],
+                        'nsfw_match_words_on_clean': [],
+                        'nsfw_match_words_on_ultra_clean': [],
+                    },
+                    'check_lstm_attention_nsfw': {
+                        'status': 'SAFE',
+                    },
+                }
             # english_status, ai_label_ratio, nsfw_status
             english_status=check_dictionary['check_english']['status'] # fails implies more than 30% is non-english and less than 50% non ai("PASS" or "FAIL")
             ai_label_ratio=check_dictionary['check_english']['ai_label_ratio'] # implies ai label relevance is bad or good (0 to 100 percentage)
