@@ -13,8 +13,6 @@ from PIL import Image
 from io import BytesIO
 import base64
 import cv2
-from tensorflow.keras.models import load_model
-import matplotlib.pyplot as plt
 import io
 import time
 import threading
@@ -35,38 +33,42 @@ os.makedirs(MODELS_DIR, exist_ok=True)
 loaded_models = {}
 model_lock = threading.Lock()
 
-# Load default model only once
-try:
-    default_model = load_model(MODEL_PATH)
-    loaded_models['default'] = {
-        'model': default_model,
-        'name': 'Default Model',
-        'filename': DEFAULT_MODEL_FILENAME
-    }
-except Exception as e:
-    print(f"Error loading default model: {e}")
-    default_model = None
-
 BASE_DIR = os.path.dirname(__file__)
 CLASSES_PATH = os.path.join(BASE_DIR, "classes.txt")
 
 with open(CLASSES_PATH, 'r') as f:
     CLASSES = [line.strip() for line in f.readlines()]
 
+def get_model_loader():
+    from tensorflow.keras.models import load_model
+
+    return load_model
+
 def load_model_safe(model_path):
     """Safely load a model with error handling"""
     try:
-        return load_model(model_path)
+        return get_model_loader()(model_path)
     except Exception as e:
         print(f"Error loading model {model_path}: {e}")
         return None
 
+def ensure_default_model_loaded():
+    if 'default' in loaded_models:
+        return
+
+    model = load_model_safe(MODEL_PATH)
+    if model:
+        loaded_models['default'] = {
+            'model': model,
+            'name': 'Default Model',
+            'filename': DEFAULT_MODEL_FILENAME
+        }
+
 def get_available_models():
     """Get list of available model files"""
     models = []
-    
-    # Add default model if it exists
-    if 'default' in loaded_models:
+
+    if os.path.exists(MODEL_PATH):
         models.append({
             'filename': DEFAULT_MODEL_FILENAME,
             'name': 'Default Model',
@@ -101,15 +103,7 @@ def load_all_models():
     global loaded_models
     
     with model_lock:
-        
-
-        # Keep default model
-        if 'default' not in loaded_models and default_model:
-            loaded_models['default'] = {
-                'model': default_model,
-                'name': 'Default Model',
-                'filename': DEFAULT_MODEL_FILENAME
-            }
+        ensure_default_model_loaded()
         
         # Load uploaded models
         if os.path.exists(MODELS_DIR):
@@ -254,32 +248,6 @@ def delete_model(request):
     
 
 
-# === Global Constants ===
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "StackPainter27.keras")
-
-# Load model only once
-from threading import Lock
-models_dir = os.path.join(settings.MEDIA_ROOT, 'models')
-model_files = sorted([f for f in os.listdir(MODELS_DIR) if f.endswith('.keras')])
-
-
-# Thread-safe model loading
-model_lock = Lock()
-models = []
-with model_lock:
-    for f in model_files:
-        try:
-            models.append(load_model(os.path.join(models_dir, f)))
-            print(f"✅ Loaded model: {f}")
-        except Exception as e:
-            print(f"❌ Failed to load model {f}: {e}")
-
-BASE_DIR = os.path.dirname(__file__)
-CLASSES_PATH = os.path.join(BASE_DIR, "classes.txt")
-
-with open(CLASSES_PATH, 'r') as f:
-    CLASSES = [line.strip() for line in f.readlines()]
-    
 def image_to_base64(img):
     """Converts a single-channel image array to base64 PNG."""
     pil_img = Image.fromarray((img * 255).astype(np.uint8)).convert("L")

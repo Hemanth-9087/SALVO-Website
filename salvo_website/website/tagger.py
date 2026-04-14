@@ -5,10 +5,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import nltk
 import os
-from .tag_dataset import AIdict
 import time
 # Check if NLTK data directory exists, if not create it
-nltk_data_dir = os.path.join(os.getcwd(), 'nltk_data')
+nltk_data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'nltk_data')
 if not os.path.exists(nltk_data_dir):
     os.makedirs(nltk_data_dir)
 
@@ -16,19 +15,17 @@ if not os.path.exists(nltk_data_dir):
 nltk.data.path.append(nltk_data_dir)
 
 
-try:
-    nltk.download('punkt')
-    nltk.download('stopwords')
-    nltk.download('wordnet')
-    nltk.download('punkt_tab')
-    print("NLTK resources successfully downloaded.")
-except Exception as e:
-    print(f"Error downloading NLTK resources: {e}")
-    print("Please run the following commands in your Python interpreter:")
-    print(">>> import nltk")
-    print(">>> nltk.download('punkt')")
-    print(">>> nltk.download('stopwords')")
-    print(">>> nltk.download('wordnet')")
+def has_nltk_resource(resource_path):
+    try:
+        nltk.data.find(resource_path)
+        return True
+    except LookupError:
+        return False
+
+
+HAS_PUNKT = has_nltk_resource('tokenizers/punkt')
+HAS_STOPWORDS = has_nltk_resource('corpora/stopwords')
+HAS_WORDNET = has_nltk_resource('corpora/wordnet')
 
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -51,13 +48,15 @@ class PostTagger:
         self.min_score = min_score
         
         # Text processing tools
-        
-        self.stop_words = set(stopwords.words('english'))
+
+        self.stop_words = set(stopwords.words('english')) if HAS_STOPWORDS else set()
        
         try:
+            if not HAS_WORDNET:
+                raise LookupError("wordnet resource not available")
             print("Using NLTK's WordNetLemmatizer for lemmatization.")
             self.lemmatizer = WordNetLemmatizer()
-        except:
+        except LookupError:
             print("Warning: WordNetLemmatizer not available, skipping lemmatization")
             self.lemmatizer = None
         
@@ -93,9 +92,11 @@ class PostTagger:
         
         # Tokenize (with fallback option)
         try:
+            if not HAS_PUNKT:
+                raise LookupError("punkt resource not available")
             print("Using NLTK word_tokenize for tokenization.")
             tokens = word_tokenize(text)    
-        except:
+        except LookupError:
             print("Warning: word_tokenize failed, using default split.")
             tokens = text.split()
             
@@ -200,3 +201,4 @@ class PostTagger:
         
         # Return top labels up to max_tags
         return relevant_labels[:self.max_tags]
+

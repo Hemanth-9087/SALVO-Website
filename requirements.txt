@@ -1,10 +1,13 @@
 django
-Django
-scikit-learn
+python-dotenv
+django-sslserver
+scikit-learn==1.4.2
 matplotlib
-tensorflow
+tensorflow==2.16.1
+keras==3.3.3
 nltk
-opencv-python
+opencv-python==4.10.0.84
+numpy==1.26.4
 # Decision Tree Dependencies
 djangorestframework==3.14.0
 django-cors-headers==4.2.0

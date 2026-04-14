@@ -6,12 +6,11 @@ from django.http import JsonResponse
 from django.core.mail import send_mail
 from .models import Account, Member, Post, JoinRequest, PostLike
 from .forms import AccountRegistrationForm, MemberRegistrationForm, LoginForm, JoinRequestForm
-from .tagger import PostTagger
 from .tag_dataset import AIdict
 from AAAS.models import AAAS
 import json
 from django.db import transaction
-from . import safe_parse_tree as spt
+from functools import lru_cache
 
 def create_member_from_acccount(account_obj, club_role="Member"):
     """
@@ -46,7 +45,11 @@ def send_custom_email(to_email, from_email, subject, body):
             except Exception as e:
                 print("Error sending email:", e)
 
-tagger = PostTagger(AIdict, title_weight=2.0, max_tags=5, min_score=0.05)
+@lru_cache(maxsize=1)
+def get_tagger():
+    from .tagger import PostTagger
+
+    return PostTagger(AIdict, title_weight=2.0, max_tags=5, min_score=0.05)
 
 def home(request):
     return render(request, 'home.html')
@@ -319,8 +322,9 @@ def create_post(request):
             # Step 1: identify tags and show for confirmation
             title = request.POST['title']
             content = request.POST['content']
-            out_tags = tagger.tag_post(title, content)
+            out_tags = get_tagger().tag_post(title, content)
             print(out_tags)
+            from . import safe_parse_tree as spt
             check_dictionary=spt.safety_check(title+"\n"+content, ENGLISH_RATIO_THRESHOLD =0.75, AI_LABEL_THRESHOLD=0.55)
             print(check_dictionary)
             # english_status, ai_label_ratio, nsfw_status

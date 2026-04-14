@@ -26,9 +26,9 @@ dotenv.load_dotenv()
 SECRET_KEY = 'django-insecure-aiw(0k*fr05@@eq2&8+)+l&e_h^=l*u1)z%e)6^!$#r#_-82v*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["172.16.21.153",'localhost','.ngrok-free.dev']
+ALLOWED_HOSTS = ['www.salvoai.cc','salvoai.cc','127.0.0.1','172.16.21.153','localhost','34.173.247.153','.ngrok-free.app','.ngrok-free.dev','.ngrok.app']
 
 
 
@@ -196,6 +196,10 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "https://*.ngrok-free.dev",
+    "https://*.ngrok.app",
+    "https://salvoai.cc",
+    "https://www.salvoai.cc"
 ]
 
 #EMAIL SETTINGS
@@ -206,3 +210,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'salvo.aics@gmail.com'
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Use Gmail App Password, not your raw Gmail password
 DEFAULT_FROM_EMAIL = 'salvo.aics@gmail.com'
+
